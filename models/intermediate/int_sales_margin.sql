@@ -16,5 +16,5 @@ select
     quantity * purchase_price AS purchase_cost,
     -- Calcul de la marge
     revenue - (quantity * purchase_price) AS margin
-from sales_data
+from  sales_data
 
