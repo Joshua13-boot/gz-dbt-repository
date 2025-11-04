@@ -1,5 +1,6 @@
 with sales_data as (
     select
+        date_date,
         s.orders_id,
         s.products_id,
         s.revenue,
