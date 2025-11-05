@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: raw # alias pour ton dataset
+    schema: gz_raw_data # nom réel du dataset BigQuery
+    tables:
+      - name: sales # alias utilisé dans DBT
+        identifier: raw_gz_sales # nom réel de la table BigQuery
+        description: "Sales of Greenweez / one row per product_id found in each order_id"
+        loaded_at_field: "CAST(date_date AS TIMESTAMP)"
+        freshness:
+          warn_after:
+            count: 90
+            period: day
+        columns:
+          - name: date_date
+            description: "Date of purchase"
+        tests:
+          - unique:
+              column_name: "(orders_id || '_' || pdt_id)"
+          - not_null:
+              column_name: "(orders_id || '_' || pdt_id)"
+
+      - name: product
+        identifier: raw_gz_product
+        description: "Products of Greenweez / table with product_id and purchase_price"
+        columns:
+          - name: products_id
+            description: "Identifiant unique du produit"
+            tests:
+              - not_null # Vérifie qu'il n'y a pas de valeurs nulles
+              - unique # Vérifie que chaque products_id est unique
+
+      - name: ship
+        identifier: raw_gz_ship
+        description: "Données d'expédition"
+        columns:
+          - name: orders_id
+            description: "Identifiant de la commande"
+            tests:
+              - not_null
+              - unique
